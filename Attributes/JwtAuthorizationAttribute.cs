@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
-namespace JwtRefreshTokenCookieAuthExample.Attributes
+namespace JwtRefreshTokenExampleWithCookies.Attributes
 {
     public class JwtAuthorizationAttribute : TypeFilterAttribute
     {

@@ -1,7 +1,7 @@
-﻿using JwtRefreshTokenCookieAuthExample.Attributes;
+﻿using JwtRefreshTokenExampleWithCookies.Attributes;
 using Microsoft.AspNetCore.Mvc;
 
-namespace JwtRefreshTokenCookieAuthExample.Controllers
+namespace JwtRefreshTokenExampleWithCookies.Controllers
 {
     [ApiController]
     [Route("[controller]")]

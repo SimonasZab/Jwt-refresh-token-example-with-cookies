@@ -1,12 +1,12 @@
-﻿using JwtRefreshTokenCookieAuthExample.Exceptions;
-using JwtRefreshTokenCookieAuthExample.Models.Request;
-using JwtRefreshTokenCookieAuthExample.Models.Response;
-using JwtRefreshTokenCookieAuthExample.Models.Settings;
-using JwtRefreshTokenCookieAuthExample.Services.Interfaces;
+﻿using JwtRefreshTokenExampleWithCookies.Exceptions;
+using JwtRefreshTokenExampleWithCookies.Models.Request;
+using JwtRefreshTokenExampleWithCookies.Models.Response;
+using JwtRefreshTokenExampleWithCookies.Models.Settings;
+using JwtRefreshTokenExampleWithCookies.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace JwtRefreshTokenCookieAuthExample.Controllers
+namespace JwtRefreshTokenExampleWithCookies.Controllers
 {
 
     [ApiController]

@@ -1,4 +1,4 @@
-﻿using JwtRefreshTokenCookieAuthExample.AuthModels;
+﻿using JwtRefreshTokenExampleWithCookies.Models.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtRefreshTokenCookieAuthExample.Services.Interfaces
+namespace JwtRefreshTokenExampleWithCookies.Services.Interfaces
 {
     public interface IAuthService
     {

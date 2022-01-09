@@ -1,4 +1,4 @@
-﻿namespace JwtRefreshTokenCookieAuthExample.Exceptions
+﻿namespace JwtRefreshTokenExampleWithCookies.Exceptions
 {
     public class ApiException : Exception
     {

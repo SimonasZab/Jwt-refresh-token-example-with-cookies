@@ -1,7 +1,7 @@
-﻿using JwtRefreshTokenCookieAuthExample.AuthModels;
-using JwtRefreshTokenCookieAuthExample.Exceptions;
-using JwtRefreshTokenCookieAuthExample.Models.Settings;
-using JwtRefreshTokenCookieAuthExample.Services.Interfaces;
+﻿using JwtRefreshTokenExampleWithCookies.Exceptions;
+using JwtRefreshTokenExampleWithCookies.Models.Auth;
+using JwtRefreshTokenExampleWithCookies.Models.Settings;
+using JwtRefreshTokenExampleWithCookies.Services.Interfaces;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -12,7 +12,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtRefreshTokenCookieAuthExample.Services
+namespace JwtRefreshTokenExampleWithCookies.Services
 {
     public class AuthService : IAuthService
     {

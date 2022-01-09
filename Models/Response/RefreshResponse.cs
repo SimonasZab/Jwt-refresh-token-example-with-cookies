@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtRefreshTokenCookieAuthExample.Models.Response
+namespace JwtRefreshTokenExampleWithCookies.Models.Response
 {
     public class RefreshResponse
     {

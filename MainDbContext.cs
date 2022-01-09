@@ -1,8 +1,8 @@
-﻿using JwtRefreshTokenCookieAuthExample.Models;
-using JwtRefreshTokenCookieAuthExample.Models.Db;
+﻿using JwtRefreshTokenExampleWithCookies.Models;
+using JwtRefreshTokenExampleWithCookies.Models.Db;
 using Microsoft.EntityFrameworkCore;
 
-namespace JwtRefreshTokenCookieAuthExample
+namespace JwtRefreshTokenExampleWithCookies
 {
     public class MainDbContext : DbContext
     {

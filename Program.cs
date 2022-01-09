@@ -1,8 +1,8 @@
-using JwtRefreshTokenCookieAuthExample;
-using JwtRefreshTokenCookieAuthExample.Models.Db;
-using JwtRefreshTokenCookieAuthExample.Models.Settings;
-using JwtRefreshTokenCookieAuthExample.Services;
-using JwtRefreshTokenCookieAuthExample.Services.Interfaces;
+using JwtRefreshTokenExampleWithCookies;
+using JwtRefreshTokenExampleWithCookies.Models.Db;
+using JwtRefreshTokenExampleWithCookies.Models.Settings;
+using JwtRefreshTokenExampleWithCookies.Services;
+using JwtRefreshTokenExampleWithCookies.Services.Interfaces;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 

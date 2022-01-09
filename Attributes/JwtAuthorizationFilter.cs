@@ -1,12 +1,12 @@
-﻿using JwtRefreshTokenCookieAuthExample.AuthModels;
-using JwtRefreshTokenCookieAuthExample.Models.Settings;
-using JwtRefreshTokenCookieAuthExample.Services.Interfaces;
+﻿using JwtRefreshTokenExampleWithCookies.Models.Auth;
+using JwtRefreshTokenExampleWithCookies.Models.Settings;
+using JwtRefreshTokenExampleWithCookies.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
-namespace JwtRefreshTokenCookieAuthExample.Attributes
+namespace JwtRefreshTokenExampleWithCookies.Attributes
 {
     public class JwtAuthorizationFilter : IAsyncAuthorizationFilter
     {

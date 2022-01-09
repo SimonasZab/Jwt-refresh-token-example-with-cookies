@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtRefreshTokenCookieAuthExample.Models.Settings
+namespace JwtRefreshTokenExampleWithCookies.Models.Settings
 {
     public class AuthSettings
     {

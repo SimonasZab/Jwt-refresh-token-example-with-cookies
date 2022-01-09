@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JwtRefreshTokenCookieAuthExample.AuthModels
+namespace JwtRefreshTokenExampleWithCookies.Models.Auth
 {
     public class Cookie
     {

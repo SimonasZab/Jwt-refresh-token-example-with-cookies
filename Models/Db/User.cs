@@ -1,4 +1,4 @@
-﻿namespace JwtRefreshTokenCookieAuthExample.Models.Db
+﻿namespace JwtRefreshTokenExampleWithCookies.Models.Db
 {
     public class User
     {
