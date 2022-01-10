@@ -11,23 +11,23 @@ namespace JwtRefreshTokenExampleWithCookies.Models.Auth
 {
     public class AuthClaims
     {
-        public long iat { get; set; }
+        public DateTime? iat { get; set; }
+        public DateTime? exp { get; set; }
+        public DateTime? nbf { get; set; }
         public Guid UserId { get; set; }
         public string Type { get; set; }
         public bool Persistent { get; set; }
 
         public AuthClaims() { }
 
-        public AuthClaims(ClaimsPrincipal claimsPrincipal) : this(claimsPrincipal.Claims)
+        public AuthClaims(ClaimsPrincipal claimsPrincipal)
         {
-        }
-
-        public AuthClaims(IEnumerable<Claim> claims)
-        {
-            iat = TryGetClaim<long>(claims, nameof(iat));
-            UserId = Guid.Parse(TryGetClaim(claims, nameof(UserId)));
-            Type = TryGetClaim(claims, nameof(Type));
-            Persistent = TryGetClaim<bool>(claims, nameof(Persistent));
+            iat = DateTimeOffset.FromUnixTimeSeconds(TryGetClaim<long>(claimsPrincipal, nameof(iat))).UtcDateTime;
+            exp = DateTimeOffset.FromUnixTimeSeconds(TryGetClaim<long>(claimsPrincipal, nameof(exp))).UtcDateTime;
+            nbf = DateTimeOffset.FromUnixTimeSeconds(TryGetClaim<long>(claimsPrincipal, nameof(nbf))).UtcDateTime;
+            UserId = Guid.Parse(TryGetClaim(claimsPrincipal, nameof(UserId)));
+            Type = TryGetClaim(claimsPrincipal, nameof(Type));
+            Persistent = TryGetClaim<bool>(claimsPrincipal, nameof(Persistent));
         }
 
         public ClaimsIdentity ToClaimsIdentity()
@@ -35,7 +35,6 @@ namespace JwtRefreshTokenExampleWithCookies.Models.Auth
             return new ClaimsIdentity(
                 new List<Claim>
                 {
-                    new Claim(nameof(iat), iat.ToString()),
                     new Claim(nameof(UserId), UserId.ToString()),
                     new Claim(nameof(Type), Type.ToString()),
                     new Claim(nameof(Persistent), Persistent.ToString()),
@@ -43,16 +42,16 @@ namespace JwtRefreshTokenExampleWithCookies.Models.Auth
             );
         }
 
-        private static T TryGetClaim<T>(IEnumerable<Claim> claims, string name)
+        private static T TryGetClaim<T>(ClaimsPrincipal claimsPrincipal, string claimType)
         {
-            var claim = claims.FirstOrDefault(x => x.Type == name);
-            if (claim == null)
+            var value = claimsPrincipal.FindFirstValue(claimType);
+            if (value == null)
             {
                 throw new ApiException();
             }
             try
             {
-                return (T)Convert.ChangeType(claim.Value, typeof(T));
+                return (T)Convert.ChangeType(value, typeof(T));
             }
             catch
             {
@@ -60,14 +59,14 @@ namespace JwtRefreshTokenExampleWithCookies.Models.Auth
             }
         }
 
-        private static string TryGetClaim(IEnumerable<Claim> claims, string name)
+        private static string TryGetClaim(ClaimsPrincipal claimsPrincipal, string claimType)
         {
-            var claim = claims.FirstOrDefault(x => x.Type == name);
-            if (claim == null)
+            var value = claimsPrincipal.FindFirstValue(claimType);
+            if (value == null)
             {
                 throw new ApiException();
             }
-            return claim.Value;
+            return value;
         }
     }
 }

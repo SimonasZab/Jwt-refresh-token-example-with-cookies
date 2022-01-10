@@ -23,10 +23,6 @@ namespace JwtRefreshTokenExampleWithCookies.Services.Interfaces
             Guid userId,
             bool persist = false);
 
-        JwtToken GenerateJwtToken(
-            AuthClaims authClaims,
-            DateTime? expiration);
-
         Cookie CreateRefreshTokenCookie(
             JwtToken jwtToken = null,
             bool? persist = null);
@@ -34,5 +30,7 @@ namespace JwtRefreshTokenExampleWithCookies.Services.Interfaces
         Cookie CreateAccessTokenCookie(
             JwtToken jwtToken = null,
             bool? persist = null);
+
+        DateTime AccessTokenExpiryDateFromNow();
     }
 }

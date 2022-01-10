@@ -85,71 +85,62 @@ namespace JwtRefreshTokenExampleWithCookies.Services
             TokenValidationParameters parameters)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
-            try
+            var claimsPrincipal = jwtTokenHandler.ValidateToken(token, parameters, out SecurityToken securityToken);
+            if (securityToken is JwtSecurityToken jwtRefrehSecurityToken)
             {
-                var claimsPrincipal = jwtTokenHandler.ValidateToken(token, parameters, out SecurityToken securityToken);
-                if (securityToken is JwtSecurityToken jwtRefrehSecurityToken)
-                {
-                    if (!jwtRefrehSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        throw new Exception();
-                    }
-                }
-                else
+                if (!jwtRefrehSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha512, StringComparison.InvariantCultureIgnoreCase))
                 {
                     throw new Exception();
                 }
-                return claimsPrincipal;
             }
-            catch
+            else
             {
-                throw new ApiException();
+                throw new Exception();
             }
+            return claimsPrincipal;
         }
 
         public RaTokens CreateRaTokens(
             Guid userId,
             bool persist = false)
         {
-            var dto = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-
             AuthClaims accessTokenPayload = new AuthClaims
             {
                 UserId = userId,
-                iat = dto.ToUnixTimeMilliseconds(),
                 Type = _appSettings.Auth.AccessTokenCookieName,
+                Persistent = persist,
             };
 
             AuthClaims refreshTokenPayload = new AuthClaims
             {
                 UserId = userId,
-                iat = dto.ToUnixTimeMilliseconds(),
                 Type = _appSettings.Auth.RefreshTokenCookieName,
                 Persistent = persist,
             };
 
-            DateTime? accessTokenExpirationDate = AccessTokenExpirationFromNow();
-            DateTime? refreshTokenExpirationDate = RefreshTokenExpirationFromNow();
+            DateTime? accessTokenExpiryDate = AccessTokenExpiryDateFromNow();
+            DateTime? refreshTokenExpiryDate = RefreshTokenExpiryDateFromNow();
 
             JwtToken AccessToken = GenerateJwtToken(
                 accessTokenPayload,
-                accessTokenExpirationDate);
+                accessTokenExpiryDate);
             JwtToken RefreshToken = GenerateJwtToken(
                 refreshTokenPayload,
-                refreshTokenExpirationDate);
+                refreshTokenExpiryDate);
+
             return new RaTokens(AccessToken, RefreshToken);
         }
 
-        public JwtToken GenerateJwtToken(
+        private JwtToken GenerateJwtToken(
             AuthClaims authClaims,
-            DateTime? expiration)
+            DateTime? expiryDate)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = authClaims.ToClaimsIdentity(),
-                Expires = expiration,
+                Expires = expiryDate,
                 SigningCredentials = SigningCredentials,
             };
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
@@ -157,15 +148,15 @@ namespace JwtRefreshTokenExampleWithCookies.Services
             return new JwtToken
             {
                 Value = jwtTokenHandler.WriteToken(token),
-                ExpiryDate = expiration,
+                ExpiryDate = expiryDate,
                 AuthClaims = authClaims
             };
         }
 
-        private DateTime AccessTokenExpirationFromNow() =>
+        public DateTime AccessTokenExpiryDateFromNow() =>
             DateTime.UtcNow.AddMinutes(_appSettings.Auth.AccessTokenValidityInMinutes);
 
-        private DateTime RefreshTokenExpirationFromNow() =>
+        private DateTime RefreshTokenExpiryDateFromNow() =>
             DateTime.UtcNow.AddDays(_appSettings.Auth.RefreshTokenValidityInDays);
 
         public Cookie CreateRefreshTokenCookie(

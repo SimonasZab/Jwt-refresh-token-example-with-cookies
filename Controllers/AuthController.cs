@@ -1,10 +1,12 @@
 ﻿using JwtRefreshTokenExampleWithCookies.Exceptions;
+using JwtRefreshTokenExampleWithCookies.Models.Auth;
 using JwtRefreshTokenExampleWithCookies.Models.Request;
 using JwtRefreshTokenExampleWithCookies.Models.Response;
 using JwtRefreshTokenExampleWithCookies.Models.Settings;
 using JwtRefreshTokenExampleWithCookies.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace JwtRefreshTokenExampleWithCookies.Controllers
 {
@@ -50,10 +52,6 @@ namespace JwtRefreshTokenExampleWithCookies.Controllers
                 user.Id,
                 body.Persist);
 
-            user.RefreshToken = jwtTokens.RefreshToken.Value;
-            user.RefreshTokenExpiryDate = jwtTokens.RefreshToken.ExpiryDate;
-            await _mainDbContext.SaveChangesAsync();
-
             var accessTokenCookie = _authService.CreateAccessTokenCookie(
                 jwtTokens.AccessToken,
                 body.Persist)
@@ -74,32 +72,8 @@ namespace JwtRefreshTokenExampleWithCookies.Controllers
         }
 
         [HttpPost("logout")]
-        public async Task<ActionResult> Logout(
-            [FromServices] AppSettings appSettings)
+        public async Task<ActionResult> Logout()
         {
-            Request.Cookies.TryGetValue(
-                appSettings.Auth.RefreshTokenCookieName,
-                out string? refreshToken);
-
-            if (refreshToken == null)
-            {
-                throw new ApiException("Invalid cookie");
-            }
-
-            var authClaims = _authService.GetPayload(refreshToken);
-
-            var user = await _mainDbContext.Users
-                .FirstOrDefaultAsync(x => x.Id == authClaims.UserId);
-
-            if (user == null)
-            {
-                throw new ApiException("User not found");
-            }
-
-            user.RefreshToken = null;
-            user.RefreshTokenExpiryDate = null;
-            await _mainDbContext.SaveChangesAsync();
-
             _authService.CreateAccessTokenCookie()
                 .DeleteFromResponse(HttpContext.Response);
 
@@ -119,10 +93,20 @@ namespace JwtRefreshTokenExampleWithCookies.Controllers
 
             if (refreshToken == null)
             {
-                throw new ApiException("Invalid cookie");
+                throw new ApiException("Invalid refresh token");
             }
 
-            var authClaims = _authService.GetPayload(refreshToken);
+            ClaimsPrincipal claimsPrincipal;
+            try
+            {
+                claimsPrincipal = _authService.ValidateToken(refreshToken);
+            }
+            catch
+            {
+                throw new ApiException("Invalid refresh token");
+            }
+
+            var authClaims = new AuthClaims(claimsPrincipal);
 
             var user = await _mainDbContext.Users
                 .FirstOrDefaultAsync(x => x.Id == authClaims.UserId);
@@ -132,38 +116,19 @@ namespace JwtRefreshTokenExampleWithCookies.Controllers
                 throw new ApiException("User not found");
             }
 
-            if (refreshToken != user.RefreshToken)
-            {
-                throw new ApiException("Invalid token");
-            }
-
-            if (user.RefreshTokenExpiryDate < DateTime.UtcNow)
-            {
-                throw new ApiException("Refresh token is expired");
-            }
-
             var jwtTokens = _authService.CreateRaTokens(
-                user.Id,
+                authClaims.UserId,
                 authClaims.Persistent);
-
-            user.RefreshToken = jwtTokens.RefreshToken.Value;
-            user.RefreshTokenExpiryDate = jwtTokens.RefreshToken.ExpiryDate;
-            await _mainDbContext.SaveChangesAsync();
 
             var accessTokenCookie = _authService.CreateAccessTokenCookie(
                 jwtTokens.AccessToken,
                 authClaims.Persistent)
                 .AppendToResponse(HttpContext.Response);
 
-            var refreshTokenCookie = _authService.CreateRefreshTokenCookie(
-                jwtTokens.RefreshToken,
-                authClaims.Persistent)
-                .AppendToResponse(HttpContext.Response);
-
             var response = new RefreshResponse
             {
                 AccessTokenExpiryDate = jwtTokens.AccessToken.ExpiryDate,
-                RefreshTokenExpiryDate = jwtTokens.RefreshToken.ExpiryDate,
+                RefreshTokenExpiryDate = authClaims.exp,
             };
 
             return Ok(response);
